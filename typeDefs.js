@@ -11,7 +11,7 @@ const typeDefs = gql`
 
     enum Priority {
         high
-        medium
+        normal
         low
     }
 

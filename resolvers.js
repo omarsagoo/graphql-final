@@ -4,7 +4,7 @@ const pubsub = new PubSub();
 const todosArr = []
 const completedTodos = []
 const priorityHigh =[]
-const priorityMedium = []
+const priorityNormal = []
 const priorityLow = []
 
 const resolvers = {
@@ -30,15 +30,15 @@ const resolvers = {
         todosByPriority: (_, {priority}) => {
             if(priority === "high") {
                 return priorityHigh
-            } else if (priority === 'medium') {
-                return priorityMedium
+            } else if (priority === 'normal') {
+                return priorityNormal
             } else if (priority === 'low') {
                 return priorityLow
             } else {
                 let all = []
 
                 all.push(...priorityHigh)
-                all.push(...priorityMedium)
+                all.push(...priorityNormal)
                 all.push(...priorityLow)
 
                 return all
@@ -53,8 +53,8 @@ const resolvers = {
             // faster than sorting the array of objects
             if(priority === "high") {
                 priorityHigh.push(todo)
-            } else if (priority === 'medium') {
-                priorityMedium.push(todo)
+            } else if (priority === 'normal') {
+                priorityNormal.push(todo)
             } else if (priority === 'low') {
                 priorityLow.push(todo)
             }
@@ -80,8 +80,8 @@ const resolvers = {
             // faster than sorting the array of objects
             if(priority === "high") {
                 priorityHigh.push(todo)
-            } else if (priority === 'medium') {
-                priorityMedium.push(todo)
+            } else if (priority === 'normal') {
+                priorityNormal.push(todo)
             } else if (priority === 'low') {
                 priorityLow.push(todo)
             }

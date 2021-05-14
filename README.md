@@ -111,7 +111,7 @@ mutation CompleteTodo {
   }
 
 # Returns only todos with a specific priority
-query TodoByPriority {
+  query TodoByPriority {
     todosByPriority(priority: high) {
       name 
       date
