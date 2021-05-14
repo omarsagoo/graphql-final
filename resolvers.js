@@ -3,13 +3,16 @@ const pubsub = new PubSub();
 
 const todosArr = []
 const completedTodos = []
+const priorityHigh =[]
+const priorityMedium = []
+const priorityLow = []
 
 const resolvers = {
     Query: {
         todos: (_, {completed}) => {
-            if (completed === true) {
+            if (completed == true) {
                 return completedTodos
-            } else if (completed === false) {
+            } else if (completed == false) {
                 let incomplete = []
                 todosArr.forEach(todo => {
                     if (!todo.completed) {
@@ -23,12 +26,38 @@ const resolvers = {
         }, 
         todo: (_, {id}) => {
             return todosArr[id]
+        },
+        todosByPriority: (_, {priority}) => {
+            if(priority === "high") {
+                return priorityHigh
+            } else if (priority === 'medium') {
+                return priorityMedium
+            } else if (priority === 'low') {
+                return priorityLow
+            } else {
+                let all = []
+
+                all.push(...priorityHigh)
+                all.push(...priorityMedium)
+                all.push(...priorityLow)
+
+                return all
+            }
         }
     },
     Mutation: {
-        addTodo: (_, {name}) => {
-            const todo = {name: name, completed: false, id: todosArr.length, date: new Date()}
+        addTodo: (_, {name, priority = 'low'}) => {
+            const todo = {name: name, completed: false, id: todosArr.length, date: new Date(), priority: priority}
             todosArr.push(todo)
+
+            // faster than sorting the array of objects
+            if(priority === "high") {
+                priorityHigh.push(todo)
+            } else if (priority === 'medium') {
+                priorityMedium.push(todo)
+            } else if (priority === 'low') {
+                priorityLow.push(todo)
+            }
 
             pubsub.publish('NEW_TODO', { newTodo: todo }) // Publish!
 
@@ -40,7 +69,22 @@ const resolvers = {
 
             completedTodos.push(todo)
 
-            pubsub.publish('COMPLETED_TODO', { completeTodo: todo }) // Publish!
+            pubsub.publish('COMPLETED_TODO', { completedTodo: todo }) // Publish!
+
+            return todo
+        },
+        setPriority: (_, {id, priority='low'}) => {
+            todosArr[id].priority = priority
+            const todo = todosArr[id]
+
+            // faster than sorting the array of objects
+            if(priority === "high") {
+                priorityHigh.push(todo)
+            } else if (priority === 'medium') {
+                priorityMedium.push(todo)
+            } else if (priority === 'low') {
+                priorityLow.push(todo)
+            }
 
             return todo
         }
@@ -49,7 +93,7 @@ const resolvers = {
         newTodo: {
             subscribe: () => pubsub.asyncIterator('NEW_TODO')
         },
-        completeTodo: {
+        completedTodo: {
             subscribe: () => pubsub.asyncIterator('COMPLETED_TODO')
         }
     }
